@@ -2,9 +2,9 @@ Logistic regression Tokyo.R #46
 ========================================================
 author: Hiro_macchan
 date: 2015/2/21  
+css: R_presentation.css
 
-
-Today I talk about 
+Today I'll talk about 
 =====================================================
 - Categorical Outcome and Logistic regression
 - Causal Effect estimation and Confounders
@@ -26,7 +26,7 @@ Who am I?
 
 Agenda
 =======================================================
-- Categorical Outcome
+- *Categorical Outcome*
 - Logistic regression
 - Causal Effect estimation
 - Confounders
@@ -44,21 +44,66 @@ Categorical Outcome
  - Registration (1 = registration)
  - Withdrawal (1 = Withdrawal)
 
-Using multivariate regression model for Categorical Outcome
+Agenda
+=======================================================
+- Categorical Outcome
+- *Logistic regression*
+- Causal Effect estimation
+- Confounders
+- Estimand
+- Colapsibility
+
+
+Using OLS for Categorical Outcome
 ========================================================
+class: small-code
+**multivariate regression(Ordinaly Least Square)**
+$$
+Y = \beta_0 + \beta_1x_1 + \eta  
+$$
+$$
+Y = \{y|0,1\}
+$$
 
-
-
-logistic regression
-==================================
-- Logistic regression Estimate *Risk (propotion)*  
-  Not *Y*
-```{r echo=FALSE,fig.width=12}
+```{r echo=FALSE}
 x_1 <- runif(n = 1000,min = -10,max=10)
 e <- rnorm(n = 1000,mean = 0,sd = 10)
 z <- (8*x_1+ e)
 y_pred <- 1/(1+exp(-z))
 y <- ifelse(y_pred<=0.5,0,1)
+```
+
+```{r}
+summary(lm(y~x_1))
+```
+
+Using multivariate regression model for Categorical Outcome
+==================================
+class: small-code
+
+```{r echo=FALSE}
+lm(y~x_1) -> res
+plot(x_1,y,main="x_1 vs Y", ylim=c(-0.5,1.5))
+abline(res)
+```
+- Y should take two values; $\{0,1\}$,however, there are other values.
+
+***
+
+```{r echo=FALSE}
+residual_res <- resid(res)
+plot(x_1,residual_res, main = "residual plot", xlab = "x_1", ylab = "standardized residual")
+abline(0,0)
+```
+- Residual are not Uniformly distribution.
+
+
+
+logistic regression
+==================================
+- Logistic regression Not Estimate *Y* But *Risk (propotion)*  
+
+```{r echo=FALSE,fig.width=15}
 
 lm(y~x_1) -> res
 x_2 <- cut(x_1, breaks = min(x_1)+(max(x_1)-min(x_1))*seq(0,1,0.1),include.lowest = T)
@@ -71,3 +116,88 @@ plot(x_1,y,main="x_1 vs Y", xlab ="x_1", ylab = "Y")
 abline(res)
 plot(x_3,p, main = "x_1 vs Proportion", xlab = "x_1", ylab = "Propotion")
 ```
+
+
+logistic regression
+==================================
+- Logistic regression Not Estimate *Y* But *Risk (propotion)*  
+ - $P=f(z)=\frac{1}{1+e^{-z}}$
+ - $f(z)$ ; *Logistic Function*  
+
+***
+- Logistic function is very similar with the Risk for X.
+```{r echo=FALSE}
+plot(function(x){1/(1+exp(-x))},-4,4, xlab="z", ylab = "f(z)")
+```
+
+logistic regression
+==================================
+**Logistic Function & Logistic regression **
+- $P=f(z)=\frac{1}{1+e^{-z}}$ has a palameter $z$
+- たとえば年齢が高いとリスクが高いという状況は、「$z$はAGEが高いほど大きくなる」とあらわせる。  
+  $z = \beta_0+\beta_1x_1 + \beta_2x_2 + \cdots+\beta_kx_k$  
+  $f(z) = \frac{1}{1+e^{-z}}$  
+  $f(z) = \frac{1}{1+e^{-\beta_0+\beta_1x_1 + \beta_2x_2 + \cdots+\beta_kx_k}}$
+- あらわされる関数($f(z)$)が実際のデータから算出されるPをうまくあらわすように$\beta_0 \cdots \beta_kx_k$ を設定してあげる。
+- 設定の仕方（最尤推定）はソフトウェアに任せる。
+- 一般線形モデルを一般化した線形モデルなので**一般化線形モデル**などと呼ばれる
+
+
+Using logistic regression 
+===========================================
+**Prediction of Outcome**
+- 従属変数を所与として、それぞれの症例のアウトカムが生じる確率を知りたい。
+- 見たいパラメータ: $P$  
+
+*e.g.*  
+ - リウマチ症例において、症状が寛解するかどうかを各種予後因子から予測したい。
+ - Predict withdrowal probability from costomers characteristics.
+
+Using logistic regression 
+===========================================
+
+# Logistic regression is not only used in prediction fields.
+
+
+Agenda
+=======================================================
+- <font color = "gray">Categorical Outcome</font>
+- <font color = "gray">Logistic regression</font>
+- **Causal Effect estimation**
+- <font color = "gray">Confounders</font>
+- <font color = "gray">Estimand</font>
+- <font color = "gray">Colapsibility</font>
+
+
+Using logistic regression 
+===========================================
+**Estimate Causal Effect **  
+
+- 独立変数対する従属変数の影響度合を知りたい。  
+- 見たいパラメータ: $\beta$  
+
+*例えば*  
+
+ - リウマチ症例において、特定の因子（治療や患者背景）が症状の寛解と関連しているか調べたい。
+ - Estimate the effect from Costomer Specific campaign. 
+
+
+
+logistic regression
+==================================
+**Logistic regression とOdds Ratio**
+- $P=f(z)=\frac{1}{1+e^{-z}}$をzについて解く
+$z = log(\frac{p}{1-p})$
+- $\frac{p}{1-p}$ はOddsをあらわす。
+- つまり、男性のz を$z_m$ 女性のz を$z_f$とすると、$z = \beta_0+\beta_1Sex + \beta_2Age$ の$\beta_1$が示すものは$log(OR)$となる。
+
+*** 
+
+$\beta_1 = \frac{z_m-z_f}{1-0}$  
+$=log(\frac{p_m}{1-p_m})-log(\frac{p_f}{1-p_f})$  
+$= log(\frac{p_m}{1-p_m}/\frac{p_f}{1-p_f})$  
+$OR = \frac{p_m}{1-p_m}/\frac{p_f}{1-p_f}= e^{\beta_1}$
+
+
+年齢（連続変数）の場合年齢が1単位増加した場合のオッズ比を算出できる。  
+$\beta$の信頼区間の出し方などはソフトウェアに任せましょう。
