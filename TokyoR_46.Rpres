@@ -1,28 +1,27 @@
-Logistic regression Tokyo.R #46
+Logistic regression and Causal Effect Estimation.
 ========================================================
 author: Hiro_macchan
-date: 2015/2/21  
+date: 2015/2/21
+at: Tokyo.R #46
 css: R_presentation.css
 
 Today I'll talk about 
 =====================================================
 - Categorical Outcome and Logistic regression
 - Causal Effect estimation and Confounders
-- Estimand and Colapsibility
-
+- Collapsibility and Estimand 
+こんなテーマでお話しします。
 
 
 Who am I?
 ======================================================
-- Matsui Hiroki(RPT, MPH) 
+- Matsui Hiroki (RPT, MPH) 
 - Major in  
   Rehabilitation Medicine, Clinical Epidemiology and Health Economics.
 - Working at  
   The University of Tokyo.  
 - Interested in  
   Outcome Research for Health services
-- I'm not so familiar with English.  
-  So, if you have any questions, please interrupt and ask me. 
 
 Agenda
 =======================================================
@@ -30,8 +29,8 @@ Agenda
 - <font color = "gray">Logistic regression</font>
 - <font color = "gray">Causal Effect estimation</font>
 - <font color = "gray">Confounders</font>
+- <font color = "gray">Collapsibility</font>
 - <font color = "gray">Estimand</font>
-- <font color = "gray">Colapsibility</font>
 
 Categorical Outcome
 ========================================================
@@ -46,18 +45,18 @@ Categorical Outcome
 
 Agenda
 =======================================================
-- Categorical Outcome
-- *Logistic regression*
-- Causal Effect estimation
-- Confounders
-- Estimand
-- Colapsibility
+- <font color = "gray">Categorical Outcome</font>
+- **Logistic regression**
+- <font color = "gray">Causal Effect estimation</font>
+- <font color = "gray">Confounders</font>
+- <font color = "gray">Collapsibility</font>
+- <font color = "gray">Estimand</font>
 
 
 Using OLS for Categorical Outcome
 ========================================================
 class: small-code
-**multivariate regression(Ordinaly Least Square)**
+**multivariate regression (Ordinary Least Square)**
 $$
 Y = \beta_0 + \beta_1x_1 + \eta  
 $$
@@ -95,14 +94,14 @@ residual_res <- resid(res)
 plot(x_1,residual_res, main = "residual plot", xlab = "x_1", ylab = "standardized residual")
 abline(0,0)
 ```
-- Residual are not Uniformly distribution.
+- Residual does not distribute Uniformly.
 
 
 
 logistic regression
 ==================================
 class: small-code
-- Logistic regression Not Estimate *Y* But *Risk (propotion)*  
+- Logistic regression NOT Estimate *Y* BUT *Risk (proportion)*  
 
 ```{r echo=FALSE,fig.width=15}
 
@@ -115,13 +114,13 @@ x_3 <- max(x_1)*seq(0.05,1,0.1)
 par(mfrow = c(1,2))
 plot(x_1,y,main="x_1 vs Y", xlab ="x_1", ylab = "Y")
 abline(res)
-plot(x_3,p, main = "x_1 vs Proportion", xlab = "x_1", ylab = "Propotion")
+plot(x_3,p, main = "x_1 vs Proportion", xlab = "x_1", ylab = "proportion")
 ```
 
 
 logistic regression
 ==================================
-- Logistic regression Not Estimate *Y* But *Risk (propotion)*  
+- Logistic regression NOT Estimate *Y* BUT *Risk (proportion)*  
  - $P=f(z)=\frac{1}{1+e^{-z}}$
  - $f(z)$ ; *Logistic Function*  
 
@@ -134,7 +133,7 @@ plot(function(x){1/(1+exp(-x))},-4,4, xlab="z", ylab = "f(z)")
 logistic regression
 ==================================
 **Logistic Function & Logistic regression **
-- $P=f(z)=\frac{1}{1+e^{-z}}$ has a palameter $z$
+- $P=f(z)=\frac{1}{1+e^{-z}}$ has a parameter $z$
 - たとえば年齢が高いとリスクが高いという状況は、「$z$はAGEが高いほど大きくなる」とあらわせる。  
   $z = \beta_0+\beta_1x_1 + \beta_2x_2 + \cdots+\beta_kx_k$  
   $f(z) = \frac{1}{1+e^{-z}}$  
@@ -152,7 +151,7 @@ Using logistic regression
 
 *e.g.*  
  - リウマチ症例において、症状が寛解するかどうかを各種予後因子から予測したい。
- - Predict withdrowal probability from costomers characteristics.
+ - 消費者の特性からサービス脱退を予測したい。
 
 Using logistic regression 
 ===========================================
@@ -166,8 +165,9 @@ Agenda
 - <font color = "gray">Logistic regression</font>
 - **Causal Effect estimation**
 - <font color = "gray">Confounders</font>
+- <font color = "gray">Collapsibility</font>
 - <font color = "gray">Estimand</font>
-- <font color = "gray">Colapsibility</font>
+
 
 Using logistic regression  
 ===========================================
@@ -179,7 +179,7 @@ Using logistic regression
 *例えば*  
 
  - リウマチ症例において、特定の因子（治療や患者背景）が症状の寛解と関連しているか調べたい。
- - Estimate the effect from Costomer Specific campaign. 
+ - 特定消費者へのキャンペーンが購買行動に与える影響を調べたい。 
 
 
 
@@ -235,9 +235,10 @@ $$
 z = logit(p) =log(\frac{p}{1-p}) = \beta_0+\beta_1Sex + \beta_2Age + \beta_3Treat
 $$
 
-$exp(beta_3)$; Treatment odds ratio adjusted for patient age and sex
+$exp(beta_3)$;   
+性別と年齢を補正したうえでの　Treatment odds ratio 
 
-Defference between Prediction model and Causal effect estimation
+Deference between Prediction model and Causal effect estimation
 ========================================================
 **Prediction of Outcome**
 - 従属変数を所与として、結果が生じる確率を知りたい。
@@ -250,7 +251,7 @@ Defference between Prediction model and Causal effect estimation
 **Causal Effect Estimation**  
 - 独立変数対する従属変数の影響度合を知りたい。  
 - 見たいパラメータ: $\beta$  
-- <font color = "red">交絡因子</font>を全て共変量に含んで居るか。
+- <font color = "red">交絡因子(Confounders)</font>を全て共変量に含んで居るか。
 - 周辺知識を統合して<font color = "red">Back Door Criteria</font>を満たすモデルを作成する必要がある。
 
 
@@ -265,8 +266,8 @@ Agenda
 - <font color = "gray">Logistic regression</font>
 - <font color = "gray">Causal Effect estimation</font>
 - **Bias and Confounders**
+- <font color = "gray">Collapsibility</font>
 - <font color = "gray">Estimand</font>
-- <font color = "gray">Colapsibility</font>
 
 Causal Effect estimation
 =========================================
@@ -286,7 +287,7 @@ Causal Effect estimation
 - <font color="red">Judia Pearl  
   Causal Diagram </font>
   <img src="Pearl.jpg" height="200px" width="300px" />  
-<b>Directed Acyclic Graphs(DAG)</b>
+<b>Directed Acyclic Graphs (DAG)</b>
 
 
 Bias and Confounders -Thinking with directed acyclic graphs
@@ -319,9 +320,9 @@ dag.dat <-
     dag.init(outcome = NULL, exposure = NULL, covs = c(1),
             arcs = c(0,-1,1,0, 1,-1),
              assocs = c(0,0), xgap = 0.04, ygap = 0.05, len = 0.1,
-             x.name = "Preterm birth",
-             cov.names = c("Maternal Age"),
-             y.name = "Later Life Maternal CVD"
+             x.name = "Hospital admission",
+             cov.names = c("Confounder; Patient Age"),,
+             y.name = "Death"
              )
 
 junk <- dag.draw(dag.dat)
@@ -338,9 +339,9 @@ dag.dat <-
     dag.init(outcome = NULL, exposure = NULL, covs = c(1),
             arcs = c(0,-1,1,0, 1,-1),
              assocs = c(0,0), xgap = 0.04, ygap = 0.05, len = 0.1,
-             x.name = "Preterm birth",
-             cov.names = c("Maternal Age"),
-             y.name = "Later Life Maternal CVD"
+             x.name = "Hospital admission",
+             cov.names = c("Confounder; Patient Age"),,
+             y.name = "Death"
              )
 
 junk <- dag.draw(dag.dat)
@@ -355,14 +356,14 @@ dag.dat <-
     dag.init(outcome = NULL, exposure = NULL, covs = c(1),
             arcs = c(0,-1,1,0, 1,-1),
              assocs = c(0,0), xgap = 0.04, ygap = 0.05, len = 0.1,
-             x.name = "Preterm birth",
-             cov.names = c("Maternal Age"),
-             y.name = "Later Life Maternal CVD"
+             x.name = "Hospital admission",
+             cov.names = c("Confounder; Patient Age"),,
+             y.name = "Death"
              )
 
 junk <- dag.draw(dag.adjust(dag.dat, A=2))
 ```
-Stratify with C, Multivarable regression include C  
+Stratify with C, Multivariable regression include C  
 Close Back Door
 
 Bias and Confounders -Thinking with directed acyclic graphs
@@ -374,9 +375,9 @@ dag.dat <-
     dag.init(outcome = NULL, exposure = NULL, covs = c(1),
             arcs = c(0,-1,0,1, -1,1),
              assocs = c(0,0), xgap = 0.04, ygap = 0.05, len = 0.1,
-             x.name = "Preterm birth",
-             cov.names = c("Maternal Age"),
-             y.name = "Later Life Maternal CVD"
+             x.name = "Hospital admission",
+             cov.names = c("Confounder; Patient Age"),,
+             y.name = "Death"
              )
 
 junk <- dag.draw(dag.dat)
@@ -391,9 +392,9 @@ dag.dat <-
     dag.init(outcome = NULL, exposure = NULL, covs = c(1),
             arcs = c(0,-1,0,1, 1,-1),
              assocs = c(0,0), xgap = 0.04, ygap = 0.05, len = 0.1,
-             x.name = "Preterm birth",
-             cov.names = c("Maternal Age"),
-             y.name = "Later Life Maternal CVD"
+             x.name = "Hospital admission",
+             cov.names = c("Confounder; Patient Age"),,
+             y.name = "Death"
              )
 
 junk <- dag.draw(dag.dat)
@@ -441,9 +442,9 @@ dag.dat <-
     dag.init(outcome = NULL, exposure = NULL, covs = c(1,1),
             arcs = c(0,-1,1,0, 1,2,2,0,2,-1),
              assocs = c(0,0), xgap = 0.04, ygap = 0.05, len = 0.1,
-             x.name = "Preterm birth",
-             cov.names = c("Maternal Age"),
-             y.name = "Later Life Maternal CVD"
+             x.name = "Hospital admission",
+             cov.names = c("Confounder; Patient Age"),,
+             y.name = "Death"
              )
 
 junk <- dag.draw(dag.dat)
@@ -453,23 +454,23 @@ junk <- dag.draw(dag.dat)
 
 Quiz
 =======================================================
-```{r echo=FALSE}
+```{r echo=FALSE,fig.align='center'}
 dag.dat <-
     dag.init(outcome = NULL, exposure = NULL, covs = c(1,1),
             arcs = c(0,-1,1,0, 1,2,2,0,2,-1),
              assocs = c(0,0), xgap = 0.04, ygap = 0.05, len = 0.1,
-             x.name = "Preterm birth",
-             cov.names = c("Maternal Age"),
-             y.name = "Later Life Maternal CVD"
+             x.name = "Hospital admission",
+             cov.names = c("Confounder; Patient Age"),,
+             y.name = "Death"
              )
 
 junk <- dag.draw(dag.dat)
 ```   
 
-3:C2  
-http://dagitty.net/dags.html?id=VFh3B
+<center>3:C2  
+http://dagitty.net/dags.html?id=VFh3B</center>
 
-Defference between Prediction model and Causal effect estimation
+Deference between Prediction model and Causal effect estimation
 ========================================================
 **Prediction of Outcome**
 - 従属変数を所与として、結果が生じる確率を知りたい。
@@ -501,26 +502,26 @@ Agenda
 - <font color = "gray">Logistic regression</font>
 - <font color = "gray">Causal Effect estimation</font>
 - <font color = "gray">Bias and Confounders</font>
-- **Colapsibility**
+- **Collapsibility**
 - <font color = "gray">Estimand</font>
 
 
 Quiz
 =======================================================
-```{r echo=FALSE}
+```{r echo=FALSE,fig.align='center'}
 dag.dat <-
     dag.init(outcome = NULL, exposure = NULL, covs = c(1,1),
             arcs = c(0,-1,1,0, 1,-1,2,-1),
              assocs = c(0,0), xgap = 0.04, ygap = 0.05, len = 0.1,
-             x.name = "Preterm birth",
-             cov.names = c("Maternal Age"),
-             y.name = "Later Life Maternal CVD"
+             x.name = "Hospital admission",
+             cov.names = c("Confounder; Patient Age"),,
+             y.name = "Death"
              )
 
 junk <- dag.draw(dag.dat)
 ```   
 
-1:C1, 2:C2, 3:C1,C2, 4:None
+<center>1:C1, 2:C2, 3:C1,C2, 4:None</center>
 
 
 Test
@@ -590,7 +591,7 @@ Agenda
 - <font color = "gray">Logistic regression</font>
 - <font color = "gray">Causal Effect estimation</font>
 - <font color = "gray">Bias and Confounders</font>
-- <font color = "gray">Colapsibility</font>
+- <font color = "gray">Collapsibility</font>
 - **Estimand**
 
 Estimand

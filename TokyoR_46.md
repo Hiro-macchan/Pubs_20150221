@@ -1,28 +1,27 @@
-Logistic regression Tokyo.R #46
+Logistic regression and Causal Effect Estimation.
 ========================================================
 author: Hiro_macchan
-date: 2015/2/21  
+date: 2015/2/21
+at: Tokyo.R #46
 css: R_presentation.css
 
 Today I'll talk about 
 =====================================================
 - Categorical Outcome and Logistic regression
 - Causal Effect estimation and Confounders
-- Estimand and Colapsibility
-
+- Collapsibility and Estimand 
+こんなテーマでお話しします。
 
 
 Who am I?
 ======================================================
-- Matsui Hiroki(RPT, MPH) 
+- Matsui Hiroki (RPT, MPH) 
 - Major in  
   Rehabilitation Medicine, Clinical Epidemiology and Health Economics.
 - Working at  
   The University of Tokyo.  
 - Interested in  
   Outcome Research for Health services
-- I'm not so familiar with English.  
-  So, if you have any questions, please interrupt and ask me. 
 
 Agenda
 =======================================================
@@ -30,8 +29,8 @@ Agenda
 - <font color = "gray">Logistic regression</font>
 - <font color = "gray">Causal Effect estimation</font>
 - <font color = "gray">Confounders</font>
+- <font color = "gray">Collapsibility</font>
 - <font color = "gray">Estimand</font>
-- <font color = "gray">Colapsibility</font>
 
 Categorical Outcome
 ========================================================
@@ -46,18 +45,18 @@ Categorical Outcome
 
 Agenda
 =======================================================
-- Categorical Outcome
-- *Logistic regression*
-- Causal Effect estimation
-- Confounders
-- Estimand
-- Colapsibility
+- <font color = "gray">Categorical Outcome</font>
+- **Logistic regression**
+- <font color = "gray">Causal Effect estimation</font>
+- <font color = "gray">Confounders</font>
+- <font color = "gray">Collapsibility</font>
+- <font color = "gray">Estimand</font>
 
 
 Using OLS for Categorical Outcome
 ========================================================
 class: small-code
-**multivariate regression(Ordinaly Least Square)**
+**multivariate regression (Ordinary Least Square)**
 $$
 Y = \beta_0 + \beta_1x_1 + \eta  
 $$
@@ -78,19 +77,19 @@ Call:
 lm(formula = y ~ x_1)
 
 Residuals:
-    Min      1Q  Median      3Q     Max 
--0.6712 -0.1956  0.0104  0.1903  0.6260 
+     Min       1Q   Median       3Q      Max 
+-0.70567 -0.17026  0.00602  0.17163  0.61661 
 
 Coefficients:
             Estimate Std. Error t value Pr(>|t|)    
-(Intercept) 0.499860   0.008503   58.79   <2e-16 ***
-x_1         0.075161   0.001515   49.60   <2e-16 ***
+(Intercept) 0.510717   0.008051   63.43   <2e-16 ***
+x_1         0.073448   0.001373   53.50   <2e-16 ***
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
-Residual standard error: 0.2689 on 998 degrees of freedom
-Multiple R-squared:  0.7114,	Adjusted R-squared:  0.7111 
-F-statistic:  2460 on 1 and 998 DF,  p-value: < 2.2e-16
+Residual standard error: 0.2545 on 998 degrees of freedom
+Multiple R-squared:  0.7414,	Adjusted R-squared:  0.7412 
+F-statistic:  2862 on 1 and 998 DF,  p-value: < 2.2e-16
 ```
 
 Using multivariate regression model for Categorical Outcome
@@ -103,21 +102,21 @@ class: small-code
 ***
 
 ![plot of chunk unnamed-chunk-4](TokyoR_46-figure/unnamed-chunk-4-1.png) 
-- Residual are not Uniformly distribution.
+- Residual does not distribute Uniformly.
 
 
 
 logistic regression
 ==================================
 class: small-code
-- Logistic regression Not Estimate *Y* But *Risk (propotion)*  
+- Logistic regression NOT Estimate *Y* BUT *Risk (proportion)*  
 
 ![plot of chunk unnamed-chunk-5](TokyoR_46-figure/unnamed-chunk-5-1.png) 
 
 
 logistic regression
 ==================================
-- Logistic regression Not Estimate *Y* But *Risk (propotion)*  
+- Logistic regression NOT Estimate *Y* BUT *Risk (proportion)*  
  - $P=f(z)=\frac{1}{1+e^{-z}}$
  - $f(z)$ ; *Logistic Function*  
 
@@ -128,7 +127,7 @@ logistic regression
 logistic regression
 ==================================
 **Logistic Function & Logistic regression **
-- $P=f(z)=\frac{1}{1+e^{-z}}$ has a palameter $z$
+- $P=f(z)=\frac{1}{1+e^{-z}}$ has a parameter $z$
 - たとえば年齢が高いとリスクが高いという状況は、「$z$はAGEが高いほど大きくなる」とあらわせる。  
   $z = \beta_0+\beta_1x_1 + \beta_2x_2 + \cdots+\beta_kx_k$  
   $f(z) = \frac{1}{1+e^{-z}}$  
@@ -146,7 +145,7 @@ Using logistic regression
 
 *e.g.*  
  - リウマチ症例において、症状が寛解するかどうかを各種予後因子から予測したい。
- - Predict withdrowal probability from costomers characteristics.
+ - 消費者の特性からサービス脱退を予測したい。
 
 Using logistic regression 
 ===========================================
@@ -160,8 +159,9 @@ Agenda
 - <font color = "gray">Logistic regression</font>
 - **Causal Effect estimation**
 - <font color = "gray">Confounders</font>
+- <font color = "gray">Collapsibility</font>
 - <font color = "gray">Estimand</font>
-- <font color = "gray">Colapsibility</font>
+
 
 Using logistic regression  
 ===========================================
@@ -173,7 +173,7 @@ Using logistic regression
 *例えば*  
 
  - リウマチ症例において、特定の因子（治療や患者背景）が症状の寛解と関連しているか調べたい。
- - Estimate the effect from Costomer Specific campaign. 
+ - 特定消費者へのキャンペーンが購買行動に与える影響を調べたい。 
 
 
 
@@ -229,9 +229,10 @@ $$
 z = logit(p) =log(\frac{p}{1-p}) = \beta_0+\beta_1Sex + \beta_2Age + \beta_3Treat
 $$
 
-$exp(beta_3)$; Treatment odds ratio adjusted for patient age and sex
+$exp(beta_3)$;   
+性別と年齢を補正したうえでの　Treatment odds ratio 
 
-Defference between Prediction model and Causal effect estimation
+Deference between Prediction model and Causal effect estimation
 ========================================================
 **Prediction of Outcome**
 - 従属変数を所与として、結果が生じる確率を知りたい。
@@ -244,7 +245,7 @@ Defference between Prediction model and Causal effect estimation
 **Causal Effect Estimation**  
 - 独立変数対する従属変数の影響度合を知りたい。  
 - 見たいパラメータ: $\beta$  
-- <font color = "red">交絡因子</font>を全て共変量に含んで居るか。
+- <font color = "red">交絡因子(Confounders)</font>を全て共変量に含んで居るか。
 - 周辺知識を統合して<font color = "red">Back Door Criteria</font>を満たすモデルを作成する必要がある。
 
 
@@ -259,8 +260,8 @@ Agenda
 - <font color = "gray">Logistic regression</font>
 - <font color = "gray">Causal Effect estimation</font>
 - **Bias and Confounders**
+- <font color = "gray">Collapsibility</font>
 - <font color = "gray">Estimand</font>
-- <font color = "gray">Colapsibility</font>
 
 Causal Effect estimation
 =========================================
@@ -280,7 +281,7 @@ Causal Effect estimation
 - <font color="red">Judia Pearl  
   Causal Diagram </font>
   <img src="Pearl.jpg" height="200px" width="300px" />  
-<b>Directed Acyclic Graphs(DAG)</b>
+<b>Directed Acyclic Graphs (DAG)</b>
 
 
 Bias and Confounders -Thinking with directed acyclic graphs
@@ -317,7 +318,7 @@ X -> C -> Y ; Back Door, Open Path
 ***
 
 ![plot of chunk unnamed-chunk-10](TokyoR_46-figure/unnamed-chunk-10-1.png) 
-Stratify with C, Multivarable regression include C  
+Stratify with C, Multivariable regression include C  
 Close Back Door
 
 Bias and Confounders -Thinking with directed acyclic graphs
@@ -363,12 +364,12 @@ Quiz
 
 Quiz
 =======================================================
-![plot of chunk unnamed-chunk-18](TokyoR_46-figure/unnamed-chunk-18-1.png) 
+<img src="TokyoR_46-figure/unnamed-chunk-18-1.png" title="plot of chunk unnamed-chunk-18" alt="plot of chunk unnamed-chunk-18" style="display: block; margin: auto;" />
 
-3:C2  
-http://dagitty.net/dags.html?id=VFh3B
+<center>3:C2  
+http://dagitty.net/dags.html?id=VFh3B</center>
 
-Defference between Prediction model and Causal effect estimation
+Deference between Prediction model and Causal effect estimation
 ========================================================
 **Prediction of Outcome**
 - 従属変数を所与として、結果が生じる確率を知りたい。
@@ -400,15 +401,15 @@ Agenda
 - <font color = "gray">Logistic regression</font>
 - <font color = "gray">Causal Effect estimation</font>
 - <font color = "gray">Bias and Confounders</font>
-- **Colapsibility**
+- **Collapsibility**
 - <font color = "gray">Estimand</font>
 
 
 Quiz
 =======================================================
-![plot of chunk unnamed-chunk-19](TokyoR_46-figure/unnamed-chunk-19-1.png) 
+<img src="TokyoR_46-figure/unnamed-chunk-19-1.png" title="plot of chunk unnamed-chunk-19" alt="plot of chunk unnamed-chunk-19" style="display: block; margin: auto;" />
 
-1:C1, 2:C2, 3:C1,C2, 4:None
+<center>1:C1, 2:C2, 3:C1,C2, 4:None</center>
 
 
 Test
@@ -432,7 +433,7 @@ Agenda
 - <font color = "gray">Logistic regression</font>
 - <font color = "gray">Causal Effect estimation</font>
 - <font color = "gray">Bias and Confounders</font>
-- <font color = "gray">Colapsibility</font>
+- <font color = "gray">Collapsibility</font>
 - **Estimand**
 
 Estimand
