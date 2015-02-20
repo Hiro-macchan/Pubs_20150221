@@ -26,12 +26,12 @@ Who am I?
 
 Agenda
 =======================================================
-- *Categorical Outcome*
-- Logistic regression
-- Causal Effect estimation
-- Confounders
-- Estimand
-- Colapsibility
+- **Categorical Outcome**
+- <font color = "gray">Logistic regression</font>
+- <font color = "gray">Causal Effect estimation</font>
+- <font color = "gray">Confounders</font>
+- <font color = "gray">Estimand</font>
+- <font color = "gray">Colapsibility</font>
 
 Categorical Outcome
 ========================================================
@@ -79,18 +79,18 @@ lm(formula = y ~ x_1)
 
 Residuals:
      Min       1Q   Median       3Q      Max 
--0.73904 -0.18275 -0.00622  0.18720  0.70981 
+-0.63546 -0.17950  0.00148  0.18687  0.63599 
 
 Coefficients:
             Estimate Std. Error t value Pr(>|t|)    
-(Intercept) 0.494942   0.008207   60.31   <2e-16 ***
-x_1         0.074214   0.001424   52.12   <2e-16 ***
+(Intercept) 0.486928   0.008292   58.73   <2e-16 ***
+x_1         0.072763   0.001416   51.37   <2e-16 ***
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
-Residual standard error: 0.2594 on 998 degrees of freedom
-Multiple R-squared:  0.7313,	Adjusted R-squared:  0.731 
-F-statistic:  2716 on 1 and 998 DF,  p-value: < 2.2e-16
+Residual standard error: 0.2622 on 998 degrees of freedom
+Multiple R-squared:  0.7256,	Adjusted R-squared:  0.7253 
+F-statistic:  2639 on 1 and 998 DF,  p-value: < 2.2e-16
 ```
 
 Using multivariate regression model for Categorical Outcome
@@ -109,6 +109,7 @@ class: small-code
 
 logistic regression
 ==================================
+class: small-code
 - Logistic regression Not Estimate *Y* But *Risk (propotion)*  
 
 ![plot of chunk unnamed-chunk-5](TokyoR_46-figure/unnamed-chunk-5-1.png) 
@@ -150,7 +151,7 @@ Using logistic regression
 Using logistic regression 
 ===========================================
 
-# Logistic regression is not only used in prediction fields.
+## Logistic regression is not <font color="red">only</font> a method for predicting outcome.
 
 
 Agenda
@@ -161,6 +162,12 @@ Agenda
 - <font color = "gray">Confounders</font>
 - <font color = "gray">Estimand</font>
 - <font color = "gray">Colapsibility</font>
+
+Causal Effect estimation
+=========================================
+- Causal Effect
+  Counterfactual
+
 
 
 Using logistic regression 
@@ -177,7 +184,7 @@ Using logistic regression
 
 
 
-logistic regression
+Odds Ratio
 ==================================
 **Logistic regression とOdds Ratio**
 - $P=f(z)=\frac{1}{1+e^{-z}}$をzについて解く
@@ -195,3 +202,141 @@ $OR = \frac{p_m}{1-p_m}/\frac{p_f}{1-p_f}= e^{\beta_1}$
 
 年齢（連続変数）の場合年齢が1単位増加した場合のオッズ比を算出できる。  
 $\beta$の信頼区間の出し方などはソフトウェアに任せましょう。
+
+Odds Ratio
+========================================================
+**割合の比較**
+
+    x   | col1   | col2
+  ----|--------|--------
+  row1| a     | b
+  row2| c      | d
+  - リスク  
+    $Risk = \frac{a}{a+b}$
+  - オッズ  
+    $Odds = \frac{a/a+b}{b/a+b} = \frac{a}{b}$
+
+***
+ - リスク差
+    $$
+     \hat{RD} = \frac{c}{c+d} 
+    $$
+ - リスク比
+    $$
+    \hat{RR} = \frac{a}{a+b} / \frac{c}{c+d}
+    $$
+ - オッズ比
+    $$
+    \hat{OR} = \frac{a}{b} / \frac{c}{d}
+    $$
+
+Adjusted Odds Ratio
+========================================================
+$$
+z = logit(p) =log(\frac{p}{1-p}) = \beta_0+\beta_1Sex + \beta_2Age + \beta_3Treat
+$$
+
+$exp(beta_3)$; Treatment odds ratio adjusted for patient age and sex
+
+Defference between Prediction model and Causal effect estimation
+========================================================
+**Prediction of Outcome**
+- 従属変数を所与として、結果が生じる確率を知りたい。
+- 見たいパラメータ: $P$ 
+- 必要な予測因子を共変量に含んで居るか。
+- クロスバリデーションやBootstrap AICなどで変数選択・モデル妥当性の確認が可能
+
+***
+
+**Causal Effect Estimation**  
+- 独立変数対する従属変数の影響度合を知りたい。  
+- 見たいパラメータ: $\beta$  
+- <font color = "red">交絡因子</font>を全て共変量に含んで居るか。
+- 周辺知識を統合して<font color = "red">Back Door 基準</font>を満たすモデルを作成する必要がある。
+
+Agenda
+=======================================================
+- <font color = "gray">Categorical Outcome</font>
+- <font color = "gray">Logistic regression</font>
+- <font color = "gray">Causal Effect estimation</font>
+- **Bias and Confounders**
+- <font color = "gray">Estimand</font>
+- <font color = "gray">Colapsibility</font>
+
+Bias and Confounders
+=======================================================
+class: small-code
+
+```r
+#install.packages("dagR")
+library(dagR)
+
+dag.dat <-
+    dag.init(outcome = NULL, exposure = NULL, covs = c(1),
+             arcs = c(1,0, 1,-1),
+             assocs = c(0,0), xgap = 0.04, ygap = 0.05, len = 0.1,
+             x.name = "Preterm birth",
+             cov.names = c("Maternal Age"),
+             y.name = "Later Life Maternal CVD"
+             )
+
+junk <- dag.draw(dag.dat, noxy = T)
+```
+
+![plot of chunk unnamed-chunk-7](TokyoR_46-figure/unnamed-chunk-7-1.png) 
+
+```r
+dag.draw(demo.dag1())
+```
+
+![plot of chunk unnamed-chunk-7](TokyoR_46-figure/unnamed-chunk-7-2.png) 
+
+```
+$cov.types
+[1]  0  1  1  1 -1
+
+$x
+[1] 0.000000000 0.005025253 0.505000000 0.994974747 1.000000000
+
+$y
+[1] 0.0000000 0.4949747 0.2690000 0.4949747 0.0000000
+
+$arc
+     [,1] [,2]
+[1,]    2    1
+[2,]    2    3
+[3,]    4    3
+[4,]    4    5
+
+$arc.type
+[1] 0 0 0 0
+
+$curve.x
+[1] NA NA NA NA
+
+$curve.y
+[1] NA NA NA NA
+
+$xgap
+[1] 0.04
+
+$ygap
+[1] 0.05
+
+$len
+[1] 0.1
+
+$names
+[1] "neighborhood violence" "urban residence"       "participation"        
+[4] "family history"        "incident CVD"         
+
+$symbols
+[1] NA NA NA NA NA
+
+$version
+[1] "1.1.3"
+
+attr(,"class")
+[1] "dagRdag"
+```
+
