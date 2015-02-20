@@ -78,19 +78,19 @@ Call:
 lm(formula = y ~ x_1)
 
 Residuals:
-     Min       1Q   Median       3Q      Max 
--0.63546 -0.17950  0.00148  0.18687  0.63599 
+    Min      1Q  Median      3Q     Max 
+-0.6712 -0.1956  0.0104  0.1903  0.6260 
 
 Coefficients:
             Estimate Std. Error t value Pr(>|t|)    
-(Intercept) 0.486928   0.008292   58.73   <2e-16 ***
-x_1         0.072763   0.001416   51.37   <2e-16 ***
+(Intercept) 0.499860   0.008503   58.79   <2e-16 ***
+x_1         0.075161   0.001515   49.60   <2e-16 ***
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
-Residual standard error: 0.2622 on 998 degrees of freedom
-Multiple R-squared:  0.7256,	Adjusted R-squared:  0.7253 
-F-statistic:  2639 on 1 and 998 DF,  p-value: < 2.2e-16
+Residual standard error: 0.2689 on 998 degrees of freedom
+Multiple R-squared:  0.7114,	Adjusted R-squared:  0.7111 
+F-statistic:  2460 on 1 and 998 DF,  p-value: < 2.2e-16
 ```
 
 Using multivariate regression model for Categorical Outcome
@@ -163,14 +163,7 @@ Agenda
 - <font color = "gray">Estimand</font>
 - <font color = "gray">Colapsibility</font>
 
-Causal Effect estimation
-=========================================
-- Causal Effect
-  Counterfactual
-
-
-
-Using logistic regression 
+Using logistic regression  
 ===========================================
 **Estimate Causal Effect **  
 
@@ -252,7 +245,13 @@ Defference between Prediction model and Causal effect estimation
 - 独立変数対する従属変数の影響度合を知りたい。  
 - 見たいパラメータ: $\beta$  
 - <font color = "red">交絡因子</font>を全て共変量に含んで居るか。
-- 周辺知識を統合して<font color = "red">Back Door 基準</font>を満たすモデルを作成する必要がある。
+- 周辺知識を統合して<font color = "red">Back Door Criteria</font>を満たすモデルを作成する必要がある。
+
+
+Deeper in Causal effect estimation
+=======================================================
+## Confounders??  
+## Back Door Criteria??
 
 Agenda
 =======================================================
@@ -263,9 +262,31 @@ Agenda
 - <font color = "gray">Estimand</font>
 - <font color = "gray">Colapsibility</font>
 
-Bias and Confounders
+Causal Effect estimation
+=========================================
+- Causal Effect
+  Counterfactual
+  ![](Fig_1.png)
+
+Causal Effect estimation
+=========================================
+- Donald B. Rubin  
+  missing value  
+  
+  <img src="Rubin.jpg" height="200px" width="300px" />
+  
+*** 
+
+- <font color="red">Judia Pearl  
+  Causal Diagram </font>
+  <img src="Pearl.jpg" height="200px" width="300px" />  
+<b>Directed Acyclic Graphs(DAG)</b>
+
+
+Bias and Confounders -Thinking with directed acyclic graphs
 =======================================================
 class: small-code
+
 
 ```r
 #install.packages("dagR")
@@ -273,70 +294,181 @@ library(dagR)
 
 dag.dat <-
     dag.init(outcome = NULL, exposure = NULL, covs = c(1),
-             arcs = c(1,0, 1,-1),
+            arcs = c(0,-1,1,0, 1,-1),
              assocs = c(0,0), xgap = 0.04, ygap = 0.05, len = 0.1,
-             x.name = "Preterm birth",
-             cov.names = c("Maternal Age"),
-             y.name = "Later Life Maternal CVD"
+             x.name = "Hospital admission",
+             cov.names = c("Confounder; Patient Age"),
+             y.name = "Death"
              )
 
-junk <- dag.draw(dag.dat, noxy = T)
+junk <- dag.draw(dag.dat)
 ```
 
-![plot of chunk unnamed-chunk-7](TokyoR_46-figure/unnamed-chunk-7-1.png) 
+***
 
-```r
-dag.draw(demo.dag1())
-```
+![plot of chunk unnamed-chunk-8](TokyoR_46-figure/unnamed-chunk-8-1.png) 
+http://dagitty.net/dags.html?id=FAu9k
 
-![plot of chunk unnamed-chunk-7](TokyoR_46-figure/unnamed-chunk-7-2.png) 
 
-```
-$cov.types
-[1]  0  1  1  1 -1
+Bias and Confounders -Thinking with directed acyclic graphs
+=======================================================
+![plot of chunk unnamed-chunk-9](TokyoR_46-figure/unnamed-chunk-9-1.png) 
+X -> C -> Y ; Back Door, Open Path
+***
 
-$x
-[1] 0.000000000 0.005025253 0.505000000 0.994974747 1.000000000
+![plot of chunk unnamed-chunk-10](TokyoR_46-figure/unnamed-chunk-10-1.png) 
+Stratify with C, Multivarable regression include C  
+Close Back Door
 
-$y
-[1] 0.0000000 0.4949747 0.2690000 0.4949747 0.0000000
+Bias and Confounders -Thinking with directed acyclic graphs
+=======================================================
+![plot of chunk unnamed-chunk-11](TokyoR_46-figure/unnamed-chunk-11-1.png) 
+Closed Path  
+http://dagitty.net/dags.html?id=qKWMS
+***
+![plot of chunk unnamed-chunk-12](TokyoR_46-figure/unnamed-chunk-12-1.png) 
+Mediator  
+http://dagitty.net/dags.html?id=MnFsp
 
-$arc
-     [,1] [,2]
-[1,]    2    1
-[2,]    2    3
-[3,]    4    3
-[4,]    4    5
+Quiz
+=======================================================
+![plot of chunk unnamed-chunk-13](TokyoR_46-figure/unnamed-chunk-13-1.png) 
+1:None  
+2:C1  
+3:C2  
+4:C1,C2  
+***
+![plot of chunk unnamed-chunk-14](TokyoR_46-figure/unnamed-chunk-14-1.png) 
+1:C1  
+2:C2  
+3:C3  
+4:None  
 
-$arc.type
-[1] 0 0 0 0
+Quiz
+=======================================================
+![plot of chunk unnamed-chunk-15](TokyoR_46-figure/unnamed-chunk-15-1.png) 
+1:None  
+http://dagitty.net/dags.html?id=47vz5
+***
+![plot of chunk unnamed-chunk-16](TokyoR_46-figure/unnamed-chunk-16-1.png) 
+4:None  
+http://dagitty.net/dags.html
 
-$curve.x
-[1] NA NA NA NA
 
-$curve.y
-[1] NA NA NA NA
+Quiz
+=======================================================
+![plot of chunk unnamed-chunk-17](TokyoR_46-figure/unnamed-chunk-17-1.png) 
 
-$xgap
-[1] 0.04
+1:None, 2:C1, 3:C2, 4:C1,C2  
 
-$ygap
-[1] 0.05
+Quiz
+=======================================================
+![plot of chunk unnamed-chunk-18](TokyoR_46-figure/unnamed-chunk-18-1.png) 
 
-$len
-[1] 0.1
+3:C2  
+http://dagitty.net/dags.html?id=VFh3B
 
-$names
-[1] "neighborhood violence" "urban residence"       "participation"        
-[4] "family history"        "incident CVD"         
+Defference between Prediction model and Causal effect estimation
+========================================================
+**Prediction of Outcome**
+- 従属変数を所与として、結果が生じる確率を知りたい。
+- 見たいパラメータ: $P$ 
+- 必要な予測因子を共変量に含んで居るか。
+- クロスバリデーションやBootstrap AICなどで変数選択・モデル妥当性の確認が可能
+- 予測力の多寡で機械的な共変量選択が可能。
 
-$symbols
-[1] NA NA NA NA NA
+***
 
-$version
-[1] "1.1.3"
+**Causal Effect Estimation**  
+- 独立変数対する従属変数の影響度合を知りたい。  
+- 見たいパラメータ: $\beta$  
+- <font color = "red">交絡因子</font>を全て共変量に含んで居るか。
+- 周辺知識を統合して<font color = "red">Back Door Criteria</font>を満たすモデルを作成する必要がある。
+- <font color = "red">機械的な共変量選択があまり意味をなさない。</font>
 
-attr(,"class")
-[1] "dagRdag"
-```
+Private Opinion
+========================================================
+# 因果関係推察する分析するときに、予測力の多寡でモデルの良し悪し語るな。
 
+追加的内容
+=======================================================
+memo: ここから先の内容は時間があったら話す。
+
+Agenda
+=======================================================
+- <font color = "gray">Categorical Outcome</font>
+- <font color = "gray">Logistic regression</font>
+- <font color = "gray">Causal Effect estimation</font>
+- <font color = "gray">Bias and Confounders</font>
+- **Colapsibility**
+- <font color = "gray">Estimand</font>
+
+
+Quiz
+=======================================================
+![plot of chunk unnamed-chunk-19](TokyoR_46-figure/unnamed-chunk-19-1.png) 
+
+1:C1, 2:C2, 3:C1,C2, 4:None
+
+
+Test
+=======================================================
+class: small-code
+
+![plot of chunk unnamed-chunk-20](TokyoR_46-figure/unnamed-chunk-20-1.png) 
+
+3:C1,C2 ?  
+http://dagitty.net/dags.html?id=g7mzV  
+https://rpubs.com/Hiro_macchan/53793  
+
+Collapsibility
+========================================================
+## Odds Ratio に着目する場合、Predictor を補正しないとOdds Ratio が0方向にバイアスされる。
+## Non-collapsibility と呼ばれる性質
+
+Agenda
+=======================================================
+- <font color = "gray">Categorical Outcome</font>
+- <font color = "gray">Logistic regression</font>
+- <font color = "gray">Causal Effect estimation</font>
+- <font color = "gray">Bias and Confounders</font>
+- <font color = "gray">Colapsibility</font>
+- **Estimand**
+
+Estimand
+=========================================================
+## =Estimate + Demand
+## 推定したいもの？
+
+## Non-collapsibility を回避するなら、Estimand をOdds Ratio から切り替える。
+Average Partial Effect(APE)
+============================================================
+APE とはロジスティックモデルの結果を利用した仮想的なRisk Differnce にあたる。  
+2値変数x のAPEを求める場合、すべての症例がx=1 であった場合の推計イベント割合から、すべての症例がx=0 であった場合の推計イベント割合を引いて算出される。  
+具体的には以下の式による[2]。
+
+$g(z) = \frac{1}{1+exp(-z)}$  
+
+$APE = \hat{\beta_K}(N^{-1}\sum_{i=1}^{N}{g(x_i\hat{\beta})}) \cdots x_K がcontinuous$  
+
+$APE = N^{-1}\sum_{i=1}^{N}{[g(\hat{\beta_1}+\hat{\beta_2}x_{i2}+\cdots+\hat{\beta_{K-1}}x_{i,K-1}+\hat{\beta_{K}})-g(\hat{\beta_1}+\hat{\beta_2}x_{i2}+\cdots+\hat{\beta_{K-1}}x_{i,K-1})]} \cdots x_K がbinary$  
+
+Average Partial Effect(APE)
+============================================================
+![plot of chunk unnamed-chunk-21](TokyoR_46-figure/unnamed-chunk-21-1.png) 
+
+
+Private Opinion
+========================================================
+# 因果関係推察する分析するときに、予測力の多寡でモデルの良し悪し語るな。
+# 因果の大きさを見るときには、Estimand に気を付けろ。
+
+Reference
+========================================================
+- Rothman, K. J., et al. (2008). Modern epidemiology, Wolters Kluwer Health   : Lippincott Williams & Wilkins.
+- Wooldridge, J. M. (2010). Econometric Analysis of Cross Section and Panel   Data, MIT Press.
+- Pearl, J. and 学. 黒木 (2009). 統計的因果推論 : モデル・推論・推測, 共立出版.
+- 宮川, 雅. (2004). 統計的因果推論 : 回帰分析の新しい枠組み, 朝倉書店.
+- http://rpubs.com/kaz_yos/
+- http://www.slideshare.net/takehikoihayashi/ss-13441401
+- https://healthpolicyhealthecon.wordpress.com/2014/12/12/causal-diagram/

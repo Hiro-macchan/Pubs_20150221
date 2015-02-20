@@ -169,14 +169,7 @@ Agenda
 - <font color = "gray">Estimand</font>
 - <font color = "gray">Colapsibility</font>
 
-Causal Effect estimation
-=========================================
-- Causal Effect
-  Counterfactual
-
-
-
-Using logistic regression 
+Using logistic regression  
 ===========================================
 **Estimate Causal Effect **  
 
@@ -258,7 +251,13 @@ Defference between Prediction model and Causal effect estimation
 - 独立変数対する従属変数の影響度合を知りたい。  
 - 見たいパラメータ: $\beta$  
 - <font color = "red">交絡因子</font>を全て共変量に含んで居るか。
-- 周辺知識を統合して<font color = "red">Back Door 基準</font>を満たすモデルを作成する必要がある。
+- 周辺知識を統合して<font color = "red">Back Door Criteria</font>を満たすモデルを作成する必要がある。
+
+
+Deeper in Causal effect estimation
+=======================================================
+## Confounders??  
+## Back Door Criteria??
 
 Agenda
 =======================================================
@@ -269,23 +268,369 @@ Agenda
 - <font color = "gray">Estimand</font>
 - <font color = "gray">Colapsibility</font>
 
-Bias and Confounders
+Causal Effect estimation
+=========================================
+- Causal Effect
+  Counterfactual
+  ![](Fig_1.png)
+
+Causal Effect estimation
+=========================================
+- Donald B. Rubin  
+  missing value  
+  
+  <img src="Rubin.jpg" height="200px" width="300px" />
+  
+*** 
+
+- <font color="red">Judia Pearl  
+  Causal Diagram </font>
+  <img src="Pearl.jpg" height="200px" width="300px" />  
+<b>Directed Acyclic Graphs(DAG)</b>
+
+
+Bias and Confounders -Thinking with directed acyclic graphs
 =======================================================
 class: small-code
-```{r}
+
+```{r eval=FALSE}
 #install.packages("dagR")
 library(dagR)
 
 dag.dat <-
     dag.init(outcome = NULL, exposure = NULL, covs = c(1),
-             arcs = c(1,0, 1,-1),
+            arcs = c(0,-1,1,0, 1,-1),
+             assocs = c(0,0), xgap = 0.04, ygap = 0.05, len = 0.1,
+             x.name = "Hospital admission",
+             cov.names = c("Confounder; Patient Age"),
+             y.name = "Death"
+             )
+
+junk <- dag.draw(dag.dat)
+
+```
+
+***
+
+```{r echo=FALSE}
+library(dagR)
+
+dag.dat <-
+    dag.init(outcome = NULL, exposure = NULL, covs = c(1),
+            arcs = c(0,-1,1,0, 1,-1),
              assocs = c(0,0), xgap = 0.04, ygap = 0.05, len = 0.1,
              x.name = "Preterm birth",
              cov.names = c("Maternal Age"),
              y.name = "Later Life Maternal CVD"
              )
 
-junk <- dag.draw(dag.dat, noxy = T)
-dag.draw(demo.dag1())
+junk <- dag.draw(dag.dat)
+```
+http://dagitty.net/dags.html?id=FAu9k
+
+
+Bias and Confounders -Thinking with directed acyclic graphs
+=======================================================
+```{r echo=FALSE}
+library(dagR)
+
+dag.dat <-
+    dag.init(outcome = NULL, exposure = NULL, covs = c(1),
+            arcs = c(0,-1,1,0, 1,-1),
+             assocs = c(0,0), xgap = 0.04, ygap = 0.05, len = 0.1,
+             x.name = "Preterm birth",
+             cov.names = c("Maternal Age"),
+             y.name = "Later Life Maternal CVD"
+             )
+
+junk <- dag.draw(dag.dat)
+```
+X -> C -> Y ; Back Door, Open Path
+***
+
+```{r echo=FALSE}
+library(dagR)
+
+dag.dat <-
+    dag.init(outcome = NULL, exposure = NULL, covs = c(1),
+            arcs = c(0,-1,1,0, 1,-1),
+             assocs = c(0,0), xgap = 0.04, ygap = 0.05, len = 0.1,
+             x.name = "Preterm birth",
+             cov.names = c("Maternal Age"),
+             y.name = "Later Life Maternal CVD"
+             )
+
+junk <- dag.draw(dag.adjust(dag.dat, A=2))
+```
+Stratify with C, Multivarable regression include C  
+Close Back Door
+
+Bias and Confounders -Thinking with directed acyclic graphs
+=======================================================
+```{r echo=FALSE}
+library(dagR)
+
+dag.dat <-
+    dag.init(outcome = NULL, exposure = NULL, covs = c(1),
+            arcs = c(0,-1,0,1, -1,1),
+             assocs = c(0,0), xgap = 0.04, ygap = 0.05, len = 0.1,
+             x.name = "Preterm birth",
+             cov.names = c("Maternal Age"),
+             y.name = "Later Life Maternal CVD"
+             )
+
+junk <- dag.draw(dag.dat)
+```
+Closed Path  
+http://dagitty.net/dags.html?id=qKWMS
+***
+```{r echo=FALSE}
+library(dagR)
+
+dag.dat <-
+    dag.init(outcome = NULL, exposure = NULL, covs = c(1),
+            arcs = c(0,-1,0,1, 1,-1),
+             assocs = c(0,0), xgap = 0.04, ygap = 0.05, len = 0.1,
+             x.name = "Preterm birth",
+             cov.names = c("Maternal Age"),
+             y.name = "Later Life Maternal CVD"
+             )
+
+junk <- dag.draw(dag.dat)
+```
+Mediator  
+http://dagitty.net/dags.html?id=MnFsp
+
+Quiz
+=======================================================
+```{r echo=FALSE}
+junk <- dag.draw(demo.dag0())
+```
+1:None  
+2:C1  
+3:C2  
+4:C1,C2  
+***
+```{r echo=FALSE}
+junk <- dag.draw(demo.dag1())
+```
+1:C1  
+2:C2  
+3:C3  
+4:None  
+
+Quiz
+=======================================================
+```{r echo=FALSE}
+junk <- dag.draw(demo.dag0())
+```
+1:None  
+http://dagitty.net/dags.html?id=47vz5
+***
+```{r echo=FALSE}
+junk <- dag.draw(demo.dag1())
+```
+4:None  
+http://dagitty.net/dags.html
+
+
+Quiz
+=======================================================
+```{r echo=FALSE}
+dag.dat <-
+    dag.init(outcome = NULL, exposure = NULL, covs = c(1,1),
+            arcs = c(0,-1,1,0, 1,2,2,0,2,-1),
+             assocs = c(0,0), xgap = 0.04, ygap = 0.05, len = 0.1,
+             x.name = "Preterm birth",
+             cov.names = c("Maternal Age"),
+             y.name = "Later Life Maternal CVD"
+             )
+
+junk <- dag.draw(dag.dat)
+```  
+
+1:None, 2:C1, 3:C2, 4:C1,C2  
+
+Quiz
+=======================================================
+```{r echo=FALSE}
+dag.dat <-
+    dag.init(outcome = NULL, exposure = NULL, covs = c(1,1),
+            arcs = c(0,-1,1,0, 1,2,2,0,2,-1),
+             assocs = c(0,0), xgap = 0.04, ygap = 0.05, len = 0.1,
+             x.name = "Preterm birth",
+             cov.names = c("Maternal Age"),
+             y.name = "Later Life Maternal CVD"
+             )
+
+junk <- dag.draw(dag.dat)
+```   
+
+3:C2  
+http://dagitty.net/dags.html?id=VFh3B
+
+Defference between Prediction model and Causal effect estimation
+========================================================
+**Prediction of Outcome**
+- 従属変数を所与として、結果が生じる確率を知りたい。
+- 見たいパラメータ: $P$ 
+- 必要な予測因子を共変量に含んで居るか。
+- クロスバリデーションやBootstrap AICなどで変数選択・モデル妥当性の確認が可能
+- 予測力の多寡で機械的な共変量選択が可能。
+
+***
+
+**Causal Effect Estimation**  
+- 独立変数対する従属変数の影響度合を知りたい。  
+- 見たいパラメータ: $\beta$  
+- <font color = "red">交絡因子</font>を全て共変量に含んで居るか。
+- 周辺知識を統合して<font color = "red">Back Door Criteria</font>を満たすモデルを作成する必要がある。
+- <font color = "red">機械的な共変量選択があまり意味をなさない。</font>
+
+Private Opinion
+========================================================
+# 因果関係推察する分析するときに、予測力の多寡でモデルの良し悪し語るな。
+
+追加的内容
+=======================================================
+memo: ここから先の内容は時間があったら話す。
+
+Agenda
+=======================================================
+- <font color = "gray">Categorical Outcome</font>
+- <font color = "gray">Logistic regression</font>
+- <font color = "gray">Causal Effect estimation</font>
+- <font color = "gray">Bias and Confounders</font>
+- **Colapsibility**
+- <font color = "gray">Estimand</font>
+
+
+Quiz
+=======================================================
+```{r echo=FALSE}
+dag.dat <-
+    dag.init(outcome = NULL, exposure = NULL, covs = c(1,1),
+            arcs = c(0,-1,1,0, 1,-1,2,-1),
+             assocs = c(0,0), xgap = 0.04, ygap = 0.05, len = 0.1,
+             x.name = "Preterm birth",
+             cov.names = c("Maternal Age"),
+             y.name = "Later Life Maternal CVD"
+             )
+
+junk <- dag.draw(dag.dat)
+```   
+
+1:C1, 2:C2, 3:C1,C2, 4:None
+
+
+Test
+=======================================================
+class: small-code
+
+```{r warning=FALSE, echo=FALSE}
+boot <- 100
+beta1 <- 2
+beta2 <- -2
+beta3 <- 1.5
+beta1_beta2 <- 1
+res_mat <- matrix(,boot,4)
+res_mat_2 <- matrix(,boot,2)
+res_mat_3 <- matrix(,boot,3)
+res_mat_4 <- matrix(,boot,3)
+mf_mat <- matrix(,boot,4)
+mf_mat_2 <- matrix(,boot,2)
+mf_mat_3 <- matrix(,boot,3)
+mf_mat_4 <- matrix(,boot,3)
+
+for(i in 1:boot){
+  n <- 10000
+  x1 <- rnorm(n,mean = 0,sd=10)
+  e2 <- rlogis(n,0,1)
+  x2 <- beta1_beta2*x1 + e2
+  x3 <- rnorm(n,mean = 0,sd=10)
+  e <- rlogis(n,0,1)
+  z <- beta1*x1+beta2*x2+ beta3*x3 +e
+  y_pred <- 1/(1+exp(-z))
+  y <- ifelse(y_pred<0.5,0,1)
+  
+  res <- glm(y~x1+x2+x3, family = binomial(logit))
+  res_mat[i,] <- res$coefficients
+  mf_mat[i,] <- coef(res) * mean((dlogis(predict(res,type = "link"))))
+  
+  res_2 <- glm(y~x1, family = binomial(logit))
+  res_mat_2[i,] <- res_2$coefficients
+  mf_mat_2[i,] <- coef(res_2) * mean((dlogis(predict(res_2,type = "link"))))
+  
+  res_3 <- glm(y~x1+x3, family = binomial(logit))
+  res_mat_3[i,] <- res_3$coefficients
+  mf_mat_3[i,] <- coef(res_3) * mean((dlogis(predict(res_3,type = "link"))))
+
+  
+  res_4 <- glm(y~x1+x2, family = binomial(logit))
+  res_mat_4[i,] <- res_4$coefficients
+  mf_mat_4[i,] <- coef(res_4) * mean((dlogis(predict(res_4,type = "link"))))
+}
+treat_coef <- cbind(res_mat[,2],res_mat_2[,2],res_mat_3[,2],res_mat_4[,2])
+colnames(treat_coef) <- c("model1","model2","model3","model4")
+boxplot(treat_coef, xlab = "model", ylab = "treat_coef")
+```   
+
+3:C1,C2 ?  
+http://dagitty.net/dags.html?id=g7mzV  
+https://rpubs.com/Hiro_macchan/53793  
+
+Collapsibility
+========================================================
+## Odds Ratio に着目する場合、Predictor を補正しないとOdds Ratio が0方向にバイアスされる。
+## Non-collapsibility と呼ばれる性質
+
+Agenda
+=======================================================
+- <font color = "gray">Categorical Outcome</font>
+- <font color = "gray">Logistic regression</font>
+- <font color = "gray">Causal Effect estimation</font>
+- <font color = "gray">Bias and Confounders</font>
+- <font color = "gray">Colapsibility</font>
+- **Estimand**
+
+Estimand
+=========================================================
+## =Estimate + Demand
+## 推定したいもの？
+
+## Non-collapsibility を回避するなら、Estimand をOdds Ratio から切り替える。
+Average Partial Effect(APE)
+============================================================
+APE とはロジスティックモデルの結果を利用した仮想的なRisk Differnce にあたる。  
+2値変数x のAPEを求める場合、すべての症例がx=1 であった場合の推計イベント割合から、すべての症例がx=0 であった場合の推計イベント割合を引いて算出される。  
+具体的には以下の式による[2]。
+
+$g(z) = \frac{1}{1+exp(-z)}$  
+
+$APE = \hat{\beta_K}(N^{-1}\sum_{i=1}^{N}{g(x_i\hat{\beta})}) \cdots x_K がcontinuous$  
+
+$APE = N^{-1}\sum_{i=1}^{N}{[g(\hat{\beta_1}+\hat{\beta_2}x_{i2}+\cdots+\hat{\beta_{K-1}}x_{i,K-1}+\hat{\beta_{K}})-g(\hat{\beta_1}+\hat{\beta_2}x_{i2}+\cdots+\hat{\beta_{K-1}}x_{i,K-1})]} \cdots x_K がbinary$  
+
+Average Partial Effect(APE)
+============================================================
+```{r echo=FALSE}
+APE <- cbind(mf_mat[,2],mf_mat_2[,2],mf_mat_3[,2],mf_mat_4[,2])
+colnames(APE) <- c("model1","model2","model3","model4")
+boxplot(APE, xlab = "model", ylab = "marginal_effect")
 ```
 
+
+Private Opinion
+========================================================
+# 因果関係推察する分析するときに、予測力の多寡でモデルの良し悪し語るな。
+# 因果の大きさを見るときには、Estimand に気を付けろ。
+
+Reference
+========================================================
+- Rothman, K. J., et al. (2008). Modern epidemiology, Wolters Kluwer Health   : Lippincott Williams & Wilkins.
+- Wooldridge, J. M. (2010). Econometric Analysis of Cross Section and Panel   Data, MIT Press.
+- Pearl, J. and 学. 黒木 (2009). 統計的因果推論 : モデル・推論・推測, 共立出版.
+- 宮川, 雅. (2004). 統計的因果推論 : 回帰分析の新しい枠組み, 朝倉書店.
+- http://rpubs.com/kaz_yos/
+- http://www.slideshare.net/takehikoihayashi/ss-13441401
+- https://healthpolicyhealthecon.wordpress.com/2014/12/12/causal-diagram/
