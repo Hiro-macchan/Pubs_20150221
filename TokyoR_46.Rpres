@@ -157,6 +157,7 @@ logistic regression
 
 Using logistic regression 
 ===========================================
+class:small-code
 **Prediction of Outcome**
 - 従属変数を所与として、それぞれの症例のアウトカムが生じる確率を知りたい。
 - 見たいパラメータ: $P$  
@@ -164,6 +165,12 @@ Using logistic regression
 *e.g.*  
  - リウマチ症例において、症状が寛解するかどうかを各種予後因子から予測したい。
  - 消費者の特性からサービス脱退を予測したい。
+```{r eval=FALSE}
+res <- glm(y~x1+x2+x3, family = binomial(logit))
+summary(res)
+predict(res,newdata = new.df)
+```
+
 
 Using logistic regression 
 ===========================================
@@ -542,7 +549,7 @@ Test
 =======================================================
 class: small-code
 
-```{r warning=FALSE, echo=FALSE}
+```{r warning=FALSE, echo=FALSE, fig.align='center'}
 boot <- 100
 beta1 <- 2
 beta2 <- -2
@@ -590,9 +597,11 @@ colnames(treat_coef) <- c("model1","model2","model3","model4")
 boxplot(treat_coef, xlab = "model", ylab = "treat_coef")
 ```   
 
+***
+
 3:C1,C2 ?  
-http://dagitty.net/dags.html?id=g7mzV  
 https://rpubs.com/Hiro_macchan/53793  
+http://dagitty.net/dags.html?id=g7mzV  
 
 Collapsibility
 ========================================================

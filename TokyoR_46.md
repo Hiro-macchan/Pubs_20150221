@@ -90,18 +90,18 @@ lm(formula = y ~ x_1)
 
 Residuals:
      Min       1Q   Median       3Q      Max 
--0.64960 -0.16787 -0.00966  0.18188  0.67288 
+-0.70143 -0.18316 -0.00647  0.19219  0.65877 
 
 Coefficients:
             Estimate Std. Error t value Pr(>|t|)    
-(Intercept) 0.499605   0.008022   62.28   <2e-16 ***
-x_1         0.073560   0.001369   53.74   <2e-16 ***
+(Intercept) 0.493929   0.008444   58.49   <2e-16 ***
+x_1         0.073288   0.001464   50.08   <2e-16 ***
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
-Residual standard error: 0.2535 on 998 degrees of freedom
-Multiple R-squared:  0.7432,	Adjusted R-squared:  0.7429 
-F-statistic:  2888 on 1 and 998 DF,  p-value: < 2.2e-16
+Residual standard error: 0.267 on 998 degrees of freedom
+Multiple R-squared:  0.7153,	Adjusted R-squared:  0.715 
+F-statistic:  2508 on 1 and 998 DF,  p-value: < 2.2e-16
 ```
 
 Using multivariate regression model for Categorical Outcome
@@ -151,6 +151,7 @@ logistic regression
 
 Using logistic regression 
 ===========================================
+class:small-code
 **Prediction of Outcome**
 - 従属変数を所与として、それぞれの症例のアウトカムが生じる確率を知りたい。
 - 見たいパラメータ: $P$  
@@ -158,6 +159,13 @@ Using logistic regression
 *e.g.*  
  - リウマチ症例において、症状が寛解するかどうかを各種予後因子から予測したい。
  - 消費者の特性からサービス脱退を予測したい。
+
+```r
+res <- glm(y~x1+x2+x3, family = binomial(logit))
+summary(res)
+predict(res,newdata = new.df)
+```
+
 
 Using logistic regression 
 ===========================================
@@ -321,39 +329,39 @@ junk <- dag.draw(dag.dat)
 
 ***
 
-![plot of chunk unnamed-chunk-8](TokyoR_46-figure/unnamed-chunk-8-1.png) 
+![plot of chunk unnamed-chunk-9](TokyoR_46-figure/unnamed-chunk-9-1.png) 
 http://dagitty.net/dags.html?id=FAu9k
 
 
 Bias and Confounders -Thinking with directed acyclic graphs
 =======================================================
-![plot of chunk unnamed-chunk-9](TokyoR_46-figure/unnamed-chunk-9-1.png) 
+![plot of chunk unnamed-chunk-10](TokyoR_46-figure/unnamed-chunk-10-1.png) 
 X -> C -> Y ; Back Door, Open Path
 ***
 
-![plot of chunk unnamed-chunk-10](TokyoR_46-figure/unnamed-chunk-10-1.png) 
+![plot of chunk unnamed-chunk-11](TokyoR_46-figure/unnamed-chunk-11-1.png) 
 Stratify with C, Multivariable regression include C  
 Close Back Door
 
 Bias and Confounders -Thinking with directed acyclic graphs
 =======================================================
-![plot of chunk unnamed-chunk-11](TokyoR_46-figure/unnamed-chunk-11-1.png) 
+![plot of chunk unnamed-chunk-12](TokyoR_46-figure/unnamed-chunk-12-1.png) 
 Closed Path  
 http://dagitty.net/dags.html?id=qKWMS
 ***
-![plot of chunk unnamed-chunk-12](TokyoR_46-figure/unnamed-chunk-12-1.png) 
+![plot of chunk unnamed-chunk-13](TokyoR_46-figure/unnamed-chunk-13-1.png) 
 Mediator  
 http://dagitty.net/dags.html?id=MnFsp
 
 Quiz
 =======================================================
-![plot of chunk unnamed-chunk-13](TokyoR_46-figure/unnamed-chunk-13-1.png) 
+![plot of chunk unnamed-chunk-14](TokyoR_46-figure/unnamed-chunk-14-1.png) 
 1:None  
 2:C1  
 3:C2  
 4:C1,C2  
 ***
-![plot of chunk unnamed-chunk-14](TokyoR_46-figure/unnamed-chunk-14-1.png) 
+![plot of chunk unnamed-chunk-15](TokyoR_46-figure/unnamed-chunk-15-1.png) 
 1:C1  
 2:C2  
 3:C3  
@@ -361,24 +369,24 @@ Quiz
 
 Quiz
 =======================================================
-![plot of chunk unnamed-chunk-15](TokyoR_46-figure/unnamed-chunk-15-1.png) 
+![plot of chunk unnamed-chunk-16](TokyoR_46-figure/unnamed-chunk-16-1.png) 
 1:None  
 http://dagitty.net/dags.html?id=47vz5
 ***
-![plot of chunk unnamed-chunk-16](TokyoR_46-figure/unnamed-chunk-16-1.png) 
+![plot of chunk unnamed-chunk-17](TokyoR_46-figure/unnamed-chunk-17-1.png) 
 4:None  
 http://dagitty.net/dags.html
 
 
 Quiz
 =======================================================
-![plot of chunk unnamed-chunk-17](TokyoR_46-figure/unnamed-chunk-17-1.png) 
+![plot of chunk unnamed-chunk-18](TokyoR_46-figure/unnamed-chunk-18-1.png) 
 
 1:None, 2:C1, 3:C2, 4:C1,C2  
 
 Quiz
 =======================================================
-<img src="TokyoR_46-figure/unnamed-chunk-18-1.png" title="plot of chunk unnamed-chunk-18" alt="plot of chunk unnamed-chunk-18" style="display: block; margin: auto;" />
+<img src="TokyoR_46-figure/unnamed-chunk-19-1.png" title="plot of chunk unnamed-chunk-19" alt="plot of chunk unnamed-chunk-19" style="display: block; margin: auto;" />
 
 <center>3:C2  
 http://dagitty.net/dags.html?id=VFh3B</center>
@@ -421,7 +429,7 @@ Agenda
 
 Quiz
 =======================================================
-<img src="TokyoR_46-figure/unnamed-chunk-19-1.png" title="plot of chunk unnamed-chunk-19" alt="plot of chunk unnamed-chunk-19" style="display: block; margin: auto;" />
+<img src="TokyoR_46-figure/unnamed-chunk-20-1.png" title="plot of chunk unnamed-chunk-20" alt="plot of chunk unnamed-chunk-20" style="display: block; margin: auto;" />
 
 <center>1:C1, 2:C2, 3:C1,C2, 4:None</center>
 
@@ -430,11 +438,13 @@ Test
 =======================================================
 class: small-code
 
-![plot of chunk unnamed-chunk-20](TokyoR_46-figure/unnamed-chunk-20-1.png) 
+<img src="TokyoR_46-figure/unnamed-chunk-21-1.png" title="plot of chunk unnamed-chunk-21" alt="plot of chunk unnamed-chunk-21" style="display: block; margin: auto;" />
+
+***
 
 3:C1,C2 ?  
-http://dagitty.net/dags.html?id=g7mzV  
 https://rpubs.com/Hiro_macchan/53793  
+http://dagitty.net/dags.html?id=g7mzV  
 
 Collapsibility
 ========================================================
@@ -470,7 +480,7 @@ $APE = N^{-1}\sum_{i=1}^{N}{[g(\hat{\beta_1}+\hat{\beta_2}x_{i2}+\cdots+\hat{\be
 
 Average Partial Effect(APE)
 ============================================================
-![plot of chunk unnamed-chunk-21](TokyoR_46-figure/unnamed-chunk-21-1.png) 
+![plot of chunk unnamed-chunk-22](TokyoR_46-figure/unnamed-chunk-22-1.png) 
 
 
 Private Opinion
