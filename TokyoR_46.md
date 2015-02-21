@@ -5,12 +5,24 @@ date: 2015/2/21
 at: Tokyo.R #46
 css: R_presentation.css
 
+Motivation
+=====================================================
+- 過去のTokyo.R の資料
+- ロジスティック回帰の考え方・使い方 (#33)  
+  http://www.slideshare.net/horihorio/tokyo-r33-logi  
+- Rで学ぶデータサイエンス5 ロジスティック回帰 (#22)
+  http://www.slideshare.net/sleipnir002/05-12739580
+
+## 予測のためのロジスティック回帰
+## ロジスティックのもう一つの側面：因果推論
+
 Today I'll talk about 
 =====================================================
 - Categorical Outcome and Logistic regression
 - Causal Effect estimation and Confounders
 - Collapsibility and Estimand 
-こんなテーマでお話しします。
+
+## こんなテーマでお話しします。
 
 
 Who am I?
@@ -78,18 +90,18 @@ lm(formula = y ~ x_1)
 
 Residuals:
      Min       1Q   Median       3Q      Max 
--0.70567 -0.17026  0.00602  0.17163  0.61661 
+-0.64960 -0.16787 -0.00966  0.18188  0.67288 
 
 Coefficients:
             Estimate Std. Error t value Pr(>|t|)    
-(Intercept) 0.510717   0.008051   63.43   <2e-16 ***
-x_1         0.073448   0.001373   53.50   <2e-16 ***
+(Intercept) 0.499605   0.008022   62.28   <2e-16 ***
+x_1         0.073560   0.001369   53.74   <2e-16 ***
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
-Residual standard error: 0.2545 on 998 degrees of freedom
-Multiple R-squared:  0.7414,	Adjusted R-squared:  0.7412 
-F-statistic:  2862 on 1 and 998 DF,  p-value: < 2.2e-16
+Residual standard error: 0.2535 on 998 degrees of freedom
+Multiple R-squared:  0.7432,	Adjusted R-squared:  0.7429 
+F-statistic:  2888 on 1 and 998 DF,  p-value: < 2.2e-16
 ```
 
 Using multivariate regression model for Categorical Outcome
@@ -126,7 +138,7 @@ logistic regression
 
 logistic regression
 ==================================
-**Logistic Function & Logistic regression **
+**Logistic Function & Logistic regression**
 - $P=f(z)=\frac{1}{1+e^{-z}}$ has a parameter $z$
 - たとえば年齢が高いとリスクが高いという状況は、「$z$はAGEが高いほど大きくなる」とあらわせる。  
   $z = \beta_0+\beta_1x_1 + \beta_2x_2 + \cdots+\beta_kx_k$  
@@ -150,7 +162,7 @@ Using logistic regression
 Using logistic regression 
 ===========================================
 
-## Logistic regression is not <font color="red">only</font> a method for predicting outcome.
+## Logistic regression is <font color="red">NOT ONLY</font> a method for predicting outcome.
 
 
 Agenda
@@ -165,7 +177,7 @@ Agenda
 
 Using logistic regression  
 ===========================================
-**Estimate Causal Effect **  
+**Estimate Causal Effect**  
 
 - 独立変数対する従属変数の影響度合を知りたい。  
 - 見たいパラメータ: $\beta$  
@@ -174,27 +186,6 @@ Using logistic regression
 
  - リウマチ症例において、特定の因子（治療や患者背景）が症状の寛解と関連しているか調べたい。
  - 特定消費者へのキャンペーンが購買行動に与える影響を調べたい。 
-
-
-
-Odds Ratio
-==================================
-**Logistic regression とOdds Ratio**
-- $P=f(z)=\frac{1}{1+e^{-z}}$をzについて解く
-$z = log(\frac{p}{1-p})$
-- $\frac{p}{1-p}$ はOddsをあらわす。
-- つまり、男性のz を$z_m$ 女性のz を$z_f$とすると、$z = \beta_0+\beta_1Sex + \beta_2Age$ の$\beta_1$が示すものは$log(OR)$となる。
-
-*** 
-
-$\beta_1 = \frac{z_m-z_f}{1-0}$  
-$=log(\frac{p_m}{1-p_m})-log(\frac{p_f}{1-p_f})$  
-$= log(\frac{p_m}{1-p_m}/\frac{p_f}{1-p_f})$  
-$OR = \frac{p_m}{1-p_m}/\frac{p_f}{1-p_f}= e^{\beta_1}$
-
-
-年齢（連続変数）の場合年齢が1単位増加した場合のオッズ比を算出できる。  
-$\beta$の信頼区間の出し方などはソフトウェアに任せましょう。
 
 Odds Ratio
 ========================================================
@@ -212,7 +203,7 @@ Odds Ratio
 ***
  - リスク差
     $$
-     \hat{RD} = \frac{c}{c+d} 
+     \hat{RD} = \frac{a}{a+b} - \frac{c}{c+d} 
     $$
  - リスク比
     $$
@@ -222,6 +213,29 @@ Odds Ratio
     $$
     \hat{OR} = \frac{a}{b} / \frac{c}{d}
     $$
+
+
+Odds Ratio
+==================================
+**Logistic regression とOdds Ratio**
+- $P=f(z)=\frac{1}{1+e^{-z}}$をzについて解く
+$z = log(\frac{p}{1-p})$
+- $\frac{p}{1-p}$ はOddsをあらわす。
+
+Odds Ratio
+==================================
+- 例えば、男性のz を$z_m$ 女性のz を$z_f$とすると、$z = \beta_0+\beta_1Sex + \beta_2Age$ の$\beta_1$が示すものは$log(OR)$となる。
+
+
+$\beta_1 = \frac{z_m-z_f}{1-0}$  
+$=log(\frac{p_m}{1-p_m})-log(\frac{p_f}{1-p_f})$  
+$= log(\frac{p_m}{1-p_m}/\frac{p_f}{1-p_f})$  
+$OR = \frac{p_m}{1-p_m}/\frac{p_f}{1-p_f}= e^{\beta_1}$
+
+
+年齢（連続変数）の場合年齢が1単位増加した場合のオッズ比を算出できる。  
+$\beta$の信頼区間の出し方などはソフトウェアに任せましょう。
+
 
 Adjusted Odds Ratio
 ========================================================
