@@ -90,18 +90,18 @@ lm(formula = y ~ x_1)
 
 Residuals:
      Min       1Q   Median       3Q      Max 
--0.70143 -0.18316 -0.00647  0.19219  0.65877 
+-0.71711 -0.18350  0.00627  0.18907  0.67767 
 
 Coefficients:
             Estimate Std. Error t value Pr(>|t|)    
-(Intercept) 0.493929   0.008444   58.49   <2e-16 ***
-x_1         0.073288   0.001464   50.08   <2e-16 ***
+(Intercept) 0.494726   0.008252   59.95   <2e-16 ***
+x_1         0.073624   0.001424   51.72   <2e-16 ***
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
-Residual standard error: 0.267 on 998 degrees of freedom
-Multiple R-squared:  0.7153,	Adjusted R-squared:  0.715 
-F-statistic:  2508 on 1 and 998 DF,  p-value: < 2.2e-16
+Residual standard error: 0.2609 on 998 degrees of freedom
+Multiple R-squared:  0.7282,	Adjusted R-squared:  0.728 
+F-statistic:  2674 on 1 and 998 DF,  p-value: < 2.2e-16
 ```
 
 Using multivariate regression model for Categorical Outcome
@@ -143,8 +143,8 @@ logistic regression
 - たとえば年齢が高いとリスクが高いという状況は、「$z$はAGEが高いほど大きくなる」とあらわせる。  
   $z = \beta_0+\beta_1x_1 + \beta_2x_2 + \cdots+\beta_kx_k$  
   $f(z) = \frac{1}{1+e^{-z}}$  
-  $f(z) = \frac{1}{1+e^{-\beta_0+\beta_1x_1 + \beta_2x_2 + \cdots+\beta_kx_k}}$
-- あらわされる関数($f(z)$)が実際のデータから算出されるPをうまくあらわすように$\beta_0 \cdots \beta_kx_k$ を設定してあげる。
+  $f(z) = \frac{1}{1+e^{-(\beta_0+\beta_1x_1 + \beta_2x_2 + \cdots+\beta_kx_k)}}$
+- あらわされる関数($f(z)$)が実際のデータから算出されるPをうまくあらわすように$\beta_0 \cdots \beta_k$ を設定してあげる。
 - 設定の仕方（最尤推定）はソフトウェアに任せる。
 - 一般線形モデルを一般化した線形モデルなので**一般化線形モデル**などと呼ばれる
 
@@ -413,9 +413,10 @@ Private Opinion
 ========================================================
 # 因果関係推察する分析するときに、予測力の多寡でモデルの良し悪し語るな。
 
-追加的内容
+Additional themes
 =======================================================
-memo: ここから先の内容は時間があったら話す。
+- memo  
+  ここから先の内容は時間があったら話す。
 
 Agenda
 =======================================================
